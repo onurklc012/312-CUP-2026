@@ -77,6 +77,16 @@
             return;
         }
 
+        // Start music on FIRST user interaction (click/touch anywhere)
+        // This satisfies browser autoplay policy
+        const startMusicOnInteraction = () => {
+            startMusic();
+            document.removeEventListener('click', startMusicOnInteraction);
+            document.removeEventListener('touchstart', startMusicOnInteraction);
+        };
+        document.addEventListener('click', startMusicOnInteraction, { once: true });
+        document.addEventListener('touchstart', startMusicOnInteraction, { once: true });
+
         // Block scroll during intro
         document.body.style.overflow = 'hidden';
 

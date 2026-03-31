@@ -458,6 +458,7 @@ body::before {
 .hero-content {
     position: relative;
     z-index: 1;
+    padding-bottom: 30px;
 }
 
 /* ── Next Match Banner ── */
@@ -641,7 +642,24 @@ body::before {
     display: block;
 }
 
-/* Team Logos Row in Hero */
+/* Team Logos Section in Hero */
+.hero-teams-wrapper {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.hero-teams-label {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    opacity: 0.8;
+}
+
 .hero-teams {
     display: flex;
     align-items: center;
