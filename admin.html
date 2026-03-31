@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>312 CUP — Admin Paneli</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+</head>
+<body>
+
+    <!-- ═══════════════ NAVIGATION ═══════════════ -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <span class="trophy-icon">🏆</span>
+            <span>312 CUP — Admin</span>
+        </a>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <a href="index.html" style="color:var(--text-muted); text-decoration:none; font-size:14px;">← Siteye Dön</a>
+        </div>
+    </nav>
+
+    <!-- ═══════════════ LOGIN ═══════════════ -->
+    <div id="loginSection">
+        <div class="admin-login-card">
+            <span class="lock-icon">🔐</span>
+            <h2>Admin Girişi</h2>
+            <p>Maç sonuçlarını güncellemek için giriş yapın</p>
+            <input type="password" class="admin-input" id="passwordInput" 
+                   placeholder="Şifre" autocomplete="off">
+            <button class="admin-btn" id="loginBtn" onclick="adminLogin()">Giriş Yap</button>
+            <p class="admin-error" id="loginError">❌ Yanlış şifre!</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ADMIN DASHBOARD ═══════════════ -->
+    <div class="admin-container" id="adminDashboard" style="display:none;">
+        
+        <div class="admin-header">
+            <h1>⚙️ Maç Sonuçları Yönetimi</h1>
+            <div class="admin-actions">
+                <button class="admin-btn" onclick="exportData()" title="Güncellenmiş data.js dosyasını indir">
+                    📥 Dışa Aktar
+                </button>
+                <button class="admin-btn admin-btn-danger" onclick="adminLogout()">
+                    🚪 Çıkış
+                </button>
+            </div>
+        </div>
+
+        <div id="adminContent">
+            <!-- Rendered by admin.js -->
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="admin-toast" id="adminToast"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

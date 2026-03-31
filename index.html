@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="312 CUP 2026 Sezonu - Dalaman Arena Halısaha Turnuvası. Puan tablosu, fikstür, gol krallığı ve canlı sonuçlar.">
+    <title>312 CUP — 2026 SEZONU | Halı Saha Turnuvası</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+</head>
+<body>
+
+    <!-- ═══════════════ INTRO ANIMATION ═══════════════ -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="intro-particles" id="introParticles"></div>
+        <div class="intro-logos-ring" id="introLogosRing"></div>
+        <div class="intro-center-logo" id="introCenterLogo">
+            <div class="intro-trophy">🏆</div>
+            <div class="intro-title">312 CUP</div>
+            <div class="intro-year">— 2026 SEZONU —</div>
+        </div>
+        <div class="intro-flash" id="introFlash"></div>
+    </div>
+
+    <!-- ═══════════════ MUSIC PLAYER ═══════════════ -->
+    <audio id="bgMusic" preload="auto">
+        <source src="assets/anthem.mp3" type="audio/mpeg">
+    </audio>
+    <button class="music-toggle" id="musicToggle" title="Müziği Aç/Kapat" style="display:none;">
+        <span class="music-icon" id="musicIcon">🔊</span>
+        <span class="music-label" id="musicLabel">Müzik</span>
+    </button>
+
+    <!-- ═══════════════ NAVIGATION ═══════════════ -->
+    <nav class="navbar" id="navbar">
+        <a href="#hero" class="nav-brand">
+            <span class="trophy-icon">🏆</span>
+            <span>312 CUP</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#standings" class="nav-link">Puan Tablosu</a></li>
+            <li><a href="#fixtures" class="nav-link">Fikstür</a></li>
+            <li><a href="#scorers" class="nav-link">Gol Krallığı</a></li>
+            <li><a href="#rules" class="nav-link">Kurallar</a></li>
+        </ul>
+        <button class="nav-toggle" id="navToggle" aria-label="Menüyü aç/kapat">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-image"></div>
+        <div class="hero-content">
+            <div class="hero-trophy">🏆</div>
+            <h1 class="hero-title">312 CUP</h1>
+            <p class="hero-subtitle">— 2026 Sezonu —</p>
+            <div class="hero-location">
+                📍 Dalaman Arena Halısaha
+            </div>
+
+            <!-- ═══ SIRADAKİ MAÇ — BÜYÜK VE BELİRGİN ═══ -->
+            <div class="next-match-banner" id="nextMatchBanner">
+                <div class="next-match-title">⚡ SIRADAKİ MAÇ</div>
+                <div class="next-match-teams" id="nextMatchTeams">
+                    <!-- Rendered by JS -->
+                </div>
+                <div class="next-match-date" id="nextMatchDate"></div>
+                <div class="countdown" id="countdown">
+                    <div class="countdown-item">
+                        <span class="countdown-value" id="countDays">--</span>
+                        <span class="countdown-unit">Gün</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-value" id="countHours">--</span>
+                        <span class="countdown-unit">Saat</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-value" id="countMinutes">--</span>
+                        <span class="countdown-unit">Dakika</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-value" id="countSeconds">--</span>
+                        <span class="countdown-unit">Saniye</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-teams" id="heroTeams">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ PUAN TABLOSU ═══════════════ -->
+    <section class="section" id="standings">
+        <div class="section-header animate-in">
+            <span class="section-icon">📊</span>
+            <h2 class="section-title">Puan Tablosu</h2>
+            <p class="section-subtitle">Güncel sıralama ve istatistikler</p>
+        </div>
+        <div class="standings-wrapper animate-in" id="standingsTable">
+            <!-- Rendered by JS -->
+        </div>
+    </section>
+
+    <!-- ═══════════════ FİKSTÜR ═══════════════ -->
+    <section class="section" id="fixtures">
+        <div class="section-header animate-in">
+            <span class="section-icon">📅</span>
+            <h2 class="section-title">Fikstür & Sonuçlar</h2>
+            <p class="section-subtitle">Hafta hafta maç programı</p>
+        </div>
+        <div class="animate-in">
+            <div class="week-tabs" id="weekTabs">
+                <!-- Rendered by JS -->
+            </div>
+            <div id="weekContents">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ GOL KRALLIĞI ═══════════════ -->
+    <section class="section" id="scorers">
+        <div class="section-header animate-in">
+            <span class="section-icon">⚽</span>
+            <h2 class="section-title">Gol Krallığı</h2>
+            <p class="section-subtitle">En golcü oyuncular</p>
+        </div>
+        <div class="scorers-grid animate-in" id="scorersList">
+            <!-- Rendered by JS -->
+        </div>
+    </section>
+
+    <!-- ═══════════════ KURALLAR ═══════════════ -->
+    <section class="section" id="rules">
+        <div class="section-header animate-in">
+            <span class="section-icon">📋</span>
+            <h2 class="section-title">Turnuva Kuralları</h2>
+            <p class="section-subtitle">312 CUP 2026 — Resmi kurallar</p>
+        </div>
+        <div class="rules-wrapper animate-in" id="rulesList">
+            <!-- Rendered by JS -->
+        </div>
+    </section>
+
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <footer class="footer">
+        <p class="footer-text">⚽ 312 CUP — 2026 Sezonu | Dalaman Arena Halısaha ⚽</p>
+        <a href="admin.html" class="footer-admin-link" title="Admin Paneli">
+            🔐 Yönetim
+        </a>
+        <p class="footer-designer">Tasarımcı: Onur Kulaç :)</p>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
