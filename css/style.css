@@ -510,7 +510,7 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 12px;
     position: relative;
     z-index: 1;
@@ -521,6 +521,9 @@ body::before {
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    flex: 1;
+    min-width: 0;
+    max-width: 180px;
 }
 
 .next-match-team-name {
@@ -536,6 +539,9 @@ body::before {
     font-size: 28px;
     color: var(--gold);
     text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    flex-shrink: 0;
+    width: 50px;
+    text-align: center;
 }
 
 .next-match-date {
