@@ -777,46 +777,29 @@
         if (!container) return;
 
         const teamKeys = Object.keys(teams);
-        const logoCount = 25;
+        const rowCount = 12; // enough rows to cover entire page height
 
-        for (let i = 0; i < logoCount; i++) {
-            const teamId = teamKeys[i % teamKeys.length];
-            const team = teams[teamId];
+        for (let r = 0; r < rowCount; r++) {
+            const row = document.createElement('div');
+            row.className = 'floating-logo-row' + (r % 2 === 1 ? ' offset' : '');
 
-            const el = document.createElement('div');
-            el.className = 'floating-logo-item';
+            for (let c = 0; c < teamKeys.length; c++) {
+                const teamId = teamKeys[c];
+                const team = teams[teamId];
 
-            const size = 100 + Math.random() * 120; // 100-220px
-            el.style.width = size + 'px';
-            el.style.height = size + 'px';
-            el.style.left = (Math.random() * 90) + '%';
-            el.style.top = (Math.random() * 90) + '%';
-            el.style.setProperty('--drift-dur', (20 + Math.random() * 25) + 's');
-            el.style.setProperty('--drift-delay', (Math.random() * 8) + 's');
-            el.style.setProperty('--start-rot', (Math.random() * 360) + 'deg');
-            el.style.setProperty('--float-y', (-15 - Math.random() * 35) + 'px');
-            el.style.setProperty('--max-opacity', (0.12 + Math.random() * 0.13).toFixed(3));
+                const el = document.createElement('div');
+                el.className = 'floating-logo-item';
 
-            const img = document.createElement('img');
-            img.src = team.logo;
-            img.alt = '';
-            img.loading = 'lazy';
-            el.appendChild(img);
-            container.appendChild(el);
-        }
-
-        // Parallax: move entire container slowly as user scrolls
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                requestAnimationFrame(() => {
-                    const scrollY = window.scrollY;
-                    container.style.transform = `translateY(${scrollY * -0.05}px)`;
-                    ticking = false;
-                });
-                ticking = true;
+                const img = document.createElement('img');
+                img.src = team.logo;
+                img.alt = '';
+                img.loading = 'lazy';
+                el.appendChild(img);
+                row.appendChild(el);
             }
-        });
+
+            container.appendChild(row);
+        }
     }
 
     // ── Initialize ──
