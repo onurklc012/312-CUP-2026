@@ -771,6 +771,60 @@
         });
     }
 
+    // ── Floating Background Logos ──
+    function initFloatingLogos() {
+        const container = document.getElementById('floatingLogosBg');
+        if (!container) return;
+
+        const teamKeys = Object.keys(teams);
+        const logoCount = 18;
+
+        for (let i = 0; i < logoCount; i++) {
+            const teamId = teamKeys[i % teamKeys.length];
+            const team = teams[teamId];
+
+            const el = document.createElement('div');
+            el.className = 'floating-logo-item';
+
+            const size = 60 + Math.random() * 80; // 60-140px
+            el.style.width = size + 'px';
+            el.style.height = size + 'px';
+            el.style.left = (Math.random() * 100) + '%';
+            el.style.top = (Math.random() * 100) + '%';
+            el.style.setProperty('--drift-dur', (18 + Math.random() * 20) + 's');
+            el.style.setProperty('--drift-delay', (Math.random() * 15) + 's');
+            el.style.setProperty('--start-rot', (Math.random() * 360) + 'deg');
+            el.style.setProperty('--float-y', (-20 - Math.random() * 50) + 'px');
+            el.style.setProperty('--max-opacity', (0.03 + Math.random() * 0.05).toFixed(3));
+            el.dataset.speed = (0.02 + Math.random() * 0.06).toFixed(3); // parallax speed
+
+            const img = document.createElement('img');
+            img.src = team.logo;
+            img.alt = '';
+            img.loading = 'lazy';
+            el.appendChild(img);
+            container.appendChild(el);
+        }
+
+        // Parallax scroll
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const scrollY = window.scrollY;
+                    const items = container.querySelectorAll('.floating-logo-item');
+                    items.forEach(item => {
+                        const speed = parseFloat(item.dataset.speed);
+                        const offset = scrollY * speed;
+                        item.style.transform = `translateY(${-offset}px)`;
+                    });
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+    }
+
     // ── Initialize ──
     function init() {
         // Start intro animation first
@@ -786,6 +840,7 @@
         initMusicToggle();
         initScrollAnimations();
         initNavbar();
+        initFloatingLogos();
 
         // ── Firebase Real-time Integration ──
         if (typeof initFirebase === 'function' && initFirebase()) {
