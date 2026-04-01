@@ -777,7 +777,8 @@
         if (!container) return;
 
         const teamKeys = Object.keys(teams);
-        const repeatCount = 6; // repeat all logos 6 times
+        // Fill viewport with repeating team logos
+        const repeatCount = 4;
 
         for (let r = 0; r < repeatCount; r++) {
             for (let c = 0; c < teamKeys.length; c++) {
@@ -789,7 +790,6 @@
                 const img = document.createElement('img');
                 img.src = team.logo;
                 img.alt = '';
-                img.loading = 'lazy';
                 el.appendChild(img);
                 container.appendChild(el);
             }
