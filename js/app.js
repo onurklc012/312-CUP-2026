@@ -789,14 +789,13 @@
             const size = 60 + Math.random() * 80; // 60-140px
             el.style.width = size + 'px';
             el.style.height = size + 'px';
-            el.style.left = (Math.random() * 100) + '%';
-            el.style.top = (Math.random() * 100) + '%';
+            el.style.left = (Math.random() * 95) + '%';
+            el.style.top = (Math.random() * 95) + '%';
             el.style.setProperty('--drift-dur', (18 + Math.random() * 20) + 's');
-            el.style.setProperty('--drift-delay', (Math.random() * 15) + 's');
+            el.style.setProperty('--drift-delay', (Math.random() * 10) + 's');
             el.style.setProperty('--start-rot', (Math.random() * 360) + 'deg');
             el.style.setProperty('--float-y', (-20 - Math.random() * 50) + 'px');
-            el.style.setProperty('--max-opacity', (0.03 + Math.random() * 0.05).toFixed(3));
-            el.dataset.speed = (0.02 + Math.random() * 0.06).toFixed(3); // parallax speed
+            el.style.setProperty('--max-opacity', (0.06 + Math.random() * 0.09).toFixed(3));
 
             const img = document.createElement('img');
             img.src = team.logo;
@@ -806,18 +805,13 @@
             container.appendChild(el);
         }
 
-        // Parallax scroll
+        // Parallax: move entire container slowly as user scrolls
         let ticking = false;
         window.addEventListener('scroll', () => {
             if (!ticking) {
                 requestAnimationFrame(() => {
                     const scrollY = window.scrollY;
-                    const items = container.querySelectorAll('.floating-logo-item');
-                    items.forEach(item => {
-                        const speed = parseFloat(item.dataset.speed);
-                        const offset = scrollY * speed;
-                        item.style.transform = `translateY(${-offset}px)`;
-                    });
+                    container.style.transform = `translateY(${scrollY * -0.05}px)`;
                     ticking = false;
                 });
                 ticking = true;
