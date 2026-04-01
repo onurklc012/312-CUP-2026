@@ -777,7 +777,7 @@
         if (!container) return;
 
         const teamKeys = Object.keys(teams);
-        const logoCount = 18;
+        const logoCount = 25;
 
         for (let i = 0; i < logoCount; i++) {
             const teamId = teamKeys[i % teamKeys.length];
@@ -786,16 +786,16 @@
             const el = document.createElement('div');
             el.className = 'floating-logo-item';
 
-            const size = 60 + Math.random() * 80; // 60-140px
+            const size = 100 + Math.random() * 120; // 100-220px
             el.style.width = size + 'px';
             el.style.height = size + 'px';
-            el.style.left = (Math.random() * 95) + '%';
-            el.style.top = (Math.random() * 95) + '%';
-            el.style.setProperty('--drift-dur', (18 + Math.random() * 20) + 's');
-            el.style.setProperty('--drift-delay', (Math.random() * 10) + 's');
+            el.style.left = (Math.random() * 90) + '%';
+            el.style.top = (Math.random() * 90) + '%';
+            el.style.setProperty('--drift-dur', (20 + Math.random() * 25) + 's');
+            el.style.setProperty('--drift-delay', (Math.random() * 8) + 's');
             el.style.setProperty('--start-rot', (Math.random() * 360) + 'deg');
-            el.style.setProperty('--float-y', (-20 - Math.random() * 50) + 'px');
-            el.style.setProperty('--max-opacity', (0.06 + Math.random() * 0.09).toFixed(3));
+            el.style.setProperty('--float-y', (-15 - Math.random() * 35) + 'px');
+            el.style.setProperty('--max-opacity', (0.12 + Math.random() * 0.13).toFixed(3));
 
             const img = document.createElement('img');
             img.src = team.logo;
