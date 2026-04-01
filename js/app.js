@@ -777,15 +777,11 @@
         if (!container) return;
 
         const teamKeys = Object.keys(teams);
-        const rowCount = 12; // enough rows to cover entire page height
+        const repeatCount = 6; // repeat all logos 6 times
 
-        for (let r = 0; r < rowCount; r++) {
-            const row = document.createElement('div');
-            row.className = 'floating-logo-row' + (r % 2 === 1 ? ' offset' : '');
-
+        for (let r = 0; r < repeatCount; r++) {
             for (let c = 0; c < teamKeys.length; c++) {
-                const teamId = teamKeys[c];
-                const team = teams[teamId];
+                const team = teams[teamKeys[c]];
 
                 const el = document.createElement('div');
                 el.className = 'floating-logo-item';
@@ -795,10 +791,8 @@
                 img.alt = '';
                 img.loading = 'lazy';
                 el.appendChild(img);
-                row.appendChild(el);
+                container.appendChild(el);
             }
-
-            container.appendChild(row);
         }
     }
 
