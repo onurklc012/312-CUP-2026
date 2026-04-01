@@ -771,37 +771,33 @@
         });
     }
 
-    // ── Floating Background Logos ──
+    // ── Background Team Logos (Parallax) ──
     function initFloatingLogos() {
         const container = document.getElementById('floatingLogosBg');
         if (!container) return;
 
         const teamKeys = Object.keys(teams);
-        // Fill viewport with repeating team logos
-        const repeatCount = 4;
 
-        for (let r = 0; r < repeatCount; r++) {
-            for (let c = 0; c < teamKeys.length; c++) {
-                const team = teams[teamKeys[c]];
+        // 5 takım = 5 büyük logo, alt alta
+        teamKeys.forEach(teamId => {
+            const team = teams[teamId];
+            const el = document.createElement('div');
+            el.className = 'floating-logo-item';
 
-                const el = document.createElement('div');
-                el.className = 'floating-logo-item';
+            const img = document.createElement('img');
+            img.src = team.logo;
+            img.alt = '';
+            el.appendChild(img);
+            container.appendChild(el);
+        });
 
-                const img = document.createElement('img');
-                img.src = team.logo;
-                img.alt = '';
-                el.appendChild(img);
-                container.appendChild(el);
-            }
-        }
-
-        // Parallax — logolar sayfayla birlikte yavaşça kayar
+        // Parallax: logolar sayfadan yavaş kayar (101huntersqn.com tarzı)
         let ticking = false;
         window.addEventListener('scroll', () => {
             if (!ticking) {
                 requestAnimationFrame(() => {
                     const scrollY = window.scrollY;
-                    container.style.transform = `translateY(${scrollY * -0.15}px)`;
+                    container.style.transform = `translateY(${scrollY * -0.3}px)`;
                     ticking = false;
                 });
                 ticking = true;
