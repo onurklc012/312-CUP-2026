@@ -794,6 +794,19 @@
                 container.appendChild(el);
             }
         }
+
+        // Parallax — logolar sayfayla birlikte yavaşça kayar
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const scrollY = window.scrollY;
+                    container.style.transform = `translateY(${scrollY * -0.15}px)`;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
     }
 
     // ── Initialize ──
