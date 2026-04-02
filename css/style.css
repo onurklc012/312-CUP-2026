@@ -215,8 +215,8 @@
 :root {
     --bg-primary: #070d1a;
     --bg-secondary: #0c1527;
-    --bg-card: rgba(15, 25, 50, 0.85);
-    --bg-card-hover: rgba(20, 35, 70, 0.9);
+    --bg-card: rgba(15, 25, 50, 0.40);
+    --bg-card-hover: rgba(20, 35, 70, 0.50);
     --bg-glass: rgba(255, 255, 255, 0.04);
     --bg-glass-hover: rgba(255, 255, 255, 0.08);
 
@@ -1138,11 +1138,11 @@ body::before {
 
 /* ── Rules ── */
 .rules-wrapper {
-    background: var(--bg-card);
+    background: transparent;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     padding: 32px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: none;
 }
 
 .rule-item {
@@ -1175,7 +1175,7 @@ body::before {
 
 .rule-text {
     font-size: 15px;
-    color: var(--text-secondary);
+    color: var(--gold);
     line-height: 1.6;
 }
 
@@ -1806,16 +1806,20 @@ body::before {
 }
 
 .floating-logo-item img {
-    width: 300px;
-    height: 300px;
-    object-fit: contain;
-    opacity: 0.08;
+    width: 900px;
+    height: 900px;
+    object-fit: cover;
+    opacity: 0.45;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 215, 0, 0.06);
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.03);
 }
 
 @media (max-width: 768px) {
     .floating-logo-item img {
-        width: 200px;
-        height: 200px;
-        opacity: 0.06;
+        width: 560px;
+        height: 560px;
+        opacity: 0.35;
+        border-width: 2px;
     }
 }
