@@ -1798,6 +1798,7 @@ body::before {
     align-items: center;
     justify-content: space-evenly;
     padding: 80px 0;
+    overflow: hidden;
 }
 
 .floating-logo-item {
