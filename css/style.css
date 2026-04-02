@@ -1806,13 +1806,14 @@ body::before {
 }
 
 .floating-logo-item img {
-    width: 900px;
-    height: 900px;
+    width: 700px;
+    height: 700px;
     object-fit: cover;
-    opacity: 0.45;
+    opacity: 0.28;
     border-radius: 50%;
     border: 3px solid rgba(255, 215, 0, 0.06);
     box-shadow: 0 0 60px rgba(255, 215, 0, 0.03);
+    filter: blur(2.5px) brightness(0.55) saturate(0.35);
 }
 
 @media (max-width: 768px) {
