@@ -16,6 +16,7 @@
     // Load saved data from localStorage (initial fallback)
     let adminResults = { ...data.results };
     let adminGoals = [...data.goals];
+    let adminCards = [...(data.cards || [])];
 
     const savedData = localStorage.getItem('312cup_admin_data');
     if (savedData) {
@@ -23,6 +24,7 @@
             const parsed = JSON.parse(savedData);
             if (parsed.results) adminResults = parsed.results;
             if (parsed.goals) adminGoals = parsed.goals;
+            if (parsed.cards) adminCards = parsed.cards;
         } catch (e) { /* ignore */ }
     }
 
@@ -42,10 +44,12 @@
             if (fbData) {
                 if (fbData.results) adminResults = fbData.results;
                 if (fbData.goals) adminGoals = Array.isArray(fbData.goals) ? fbData.goals : Object.values(fbData.goals);
+                if (fbData.cards) adminCards = Array.isArray(fbData.cards) ? fbData.cards : Object.values(fbData.cards);
                 // Also update localStorage
                 localStorage.setItem('312cup_admin_data', JSON.stringify({
                     results: adminResults,
-                    goals: adminGoals
+                    goals: adminGoals,
+                    cards: adminCards
                 }));
             }
             if (callback) callback();
@@ -119,6 +123,7 @@
 
                 const r = adminResults[match.id];
                 const matchGoals = adminGoals.filter(g => g.matchId === match.id);
+                const matchCards = adminCards.filter(c => c.matchId === match.id);
 
                 const homeScore = r && r.played ? r.homeScore : '';
                 const awayScore = r && r.played ? r.awayScore : '';
@@ -162,6 +167,16 @@
                         </div>
                         <button class="admin-add-goal-btn" onclick="addGoalRow(${match.id}, '${match.home}', '${match.away}')">
                             ➕ Gol Ekle
+                        </button>
+                    </div>
+
+                    <div class="admin-goals-section">
+                        <h4>🟨🟥 Kartlar</h4>
+                        <div id="cards-list-${match.id}">
+                            ${renderCardRows(match.id, matchCards, match.home, match.away)}
+                        </div>
+                        <button class="admin-add-goal-btn" onclick="addCardRow(${match.id}, '${match.home}', '${match.away}')">
+                            ➕ Kart Ekle
                         </button>
                     </div>
 
@@ -264,6 +279,80 @@
         }
     };
 
+    // ── Render Card Rows ──
+    function renderCardRows(matchId, cardsList, homeId, awayId) {
+        if (cardsList.length === 0) return '<p style="font-size:13px; color:var(--text-muted); margin:8px 0;">Henüz kart eklenmedi</p>';
+
+        let html = '';
+        cardsList.forEach((card, index) => {
+            html += `<div class="admin-goal-row" id="card-row-${matchId}-${index}">
+                <input type="text" name="card-player" placeholder="Oyuncu adı" value="${card.player || ''}" 
+                       data-match="${matchId}" data-index="${index}">
+                <select name="card-team" data-match="${matchId}" data-index="${index}">
+                    <option value="${homeId}" ${card.teamId === homeId ? 'selected' : ''}>${teams[homeId].name}</option>
+                    <option value="${awayId}" ${card.teamId === awayId ? 'selected' : ''}>${teams[awayId].name}</option>
+                </select>
+                <select name="card-type" data-match="${matchId}" data-index="${index}">
+                    <option value="yellow" ${card.type === 'yellow' ? 'selected' : ''}>🟨 Sarı</option>
+                    <option value="red" ${card.type === 'red' ? 'selected' : ''}>🟥 Kırmızı</option>
+                </select>
+                <input type="number" name="card-minute" placeholder="dk" value="${card.minute || ''}" min="1" max="90"
+                       data-match="${matchId}" data-index="${index}" style="width:70px;">
+                <button class="admin-goal-remove" onclick="removeCardRow(${matchId}, ${index}, '${homeId}', '${awayId}')">✕</button>
+            </div>`;
+        });
+        return html;
+    }
+
+    // ── Add Card Row ──
+    window.addCardRow = function (matchId, homeId, awayId) {
+        const container = document.getElementById(`cards-list-${matchId}`);
+        if (!container) return;
+
+        const noCardMsg = container.querySelector('p');
+        if (noCardMsg) noCardMsg.remove();
+
+        const matchCards = adminCards.filter(c => c.matchId === matchId);
+        const index = matchCards.length;
+
+        adminCards.push({ matchId, player: '', teamId: homeId, type: 'yellow', minute: null });
+
+        const row = document.createElement('div');
+        row.className = 'admin-goal-row';
+        row.id = `card-row-${matchId}-${index}`;
+        row.innerHTML = `
+            <input type="text" name="card-player" placeholder="Oyuncu adı" value="" 
+                   data-match="${matchId}" data-index="${index}">
+            <select name="card-team" data-match="${matchId}" data-index="${index}">
+                <option value="${homeId}">${teams[homeId].name}</option>
+                <option value="${awayId}">${teams[awayId].name}</option>
+            </select>
+            <select name="card-type" data-match="${matchId}" data-index="${index}">
+                <option value="yellow">🟨 Sarı</option>
+                <option value="red">🟥 Kırmızı</option>
+            </select>
+            <input type="number" name="card-minute" placeholder="dk" value="" min="1" max="90"
+                   data-match="${matchId}" data-index="${index}" style="width:70px;">
+            <button class="admin-goal-remove" onclick="removeCardRow(${matchId}, ${index}, '${homeId}', '${awayId}')">✕</button>
+        `;
+        container.appendChild(row);
+        row.querySelector('input[name="card-player"]').focus();
+    };
+
+    // ── Remove Card Row ──
+    window.removeCardRow = function (matchId, index, homeId, awayId) {
+        const matchCards = adminCards.filter(c => c.matchId === matchId);
+        if (index < matchCards.length) {
+            const globalIndex = adminCards.indexOf(matchCards[index]);
+            if (globalIndex > -1) adminCards.splice(globalIndex, 1);
+        }
+        const container = document.getElementById(`cards-list-${matchId}`);
+        if (container) {
+            const newMatchCards = adminCards.filter(c => c.matchId === matchId);
+            container.innerHTML = renderCardRows(matchId, newMatchCards, homeId, awayId);
+        }
+    };
+
     // ── Save Match ──
     window.saveMatch = function (matchId, homeId, awayId) {
         const homeScoreEl = document.getElementById(`home-score-${matchId}`);
@@ -303,6 +392,32 @@
                     matchId: matchId,
                     player: player,
                     teamId: teamSelect.value,
+                    minute: minuteInput.value ? parseInt(minuteInput.value) : null
+                });
+            }
+        });
+
+        // Collect cards from the form
+        const cardsContainer = document.getElementById(`cards-list-${matchId}`);
+        const cardRows = cardsContainer.querySelectorAll('.admin-goal-row');
+
+        // Remove old cards for this match
+        adminCards = adminCards.filter(c => c.matchId !== matchId);
+
+        // Add new cards from form
+        cardRows.forEach(row => {
+            const playerInput = row.querySelector('input[name="card-player"]');
+            const teamSelect = row.querySelector('select[name="card-team"]');
+            const typeSelect = row.querySelector('select[name="card-type"]');
+            const minuteInput = row.querySelector('input[name="card-minute"]');
+
+            const player = playerInput.value.trim();
+            if (player) {
+                adminCards.push({
+                    matchId: matchId,
+                    player: player,
+                    teamId: teamSelect.value,
+                    type: typeSelect.value,
                     minute: minuteInput.value ? parseInt(minuteInput.value) : null
                 });
             }
@@ -356,8 +471,9 @@
         delete adminResults[String(matchId)];
         delete adminResults[Number(matchId)];
 
-        // Use loose equality for goal filtering (handles string/number mismatch)
+        // Use loose equality for goal/card filtering (handles string/number mismatch)
         adminGoals = adminGoals.filter(g => g.matchId != matchId);
+        adminCards = adminCards.filter(c => c.matchId != matchId);
 
         saveToLocalStorage();
         showToast('🗑️ Maç sonucu silindi!', 'success');
@@ -375,14 +491,15 @@
     function saveToLocalStorage() {
         const dataToSave = {
             results: adminResults,
-            goals: adminGoals
+            goals: adminGoals,
+            cards: adminCards
         };
         // Always save to localStorage (fallback)
         localStorage.setItem('312cup_admin_data', JSON.stringify(dataToSave));
 
         // Also push to Firebase for real-time sync
         if (adminFirebaseReady && typeof firebaseSaveData === 'function') {
-            firebaseSaveData(adminResults, adminGoals)
+            firebaseSaveData(adminResults, adminGoals, adminCards)
                 .then(success => {
                     if (success) {
                         showToast('☁️ Firebase\'e sınkronize edildi!', 'success');
@@ -428,6 +545,28 @@
                             }
                         });
                     }
+
+                    // Collect cards
+                    const cardsContainer = document.getElementById(`cards-list-${match.id}`);
+                    if (cardsContainer) {
+                        const cardRows = cardsContainer.querySelectorAll('.admin-goal-row');
+                        adminCards = adminCards.filter(c => c.matchId !== match.id);
+                        cardRows.forEach(row => {
+                            const player = row.querySelector('input[name="card-player"]')?.value.trim();
+                            const teamId = row.querySelector('select[name="card-team"]')?.value;
+                            const type = row.querySelector('select[name="card-type"]')?.value;
+                            const minute = row.querySelector('input[name="card-minute"]')?.value;
+                            if (player) {
+                                adminCards.push({
+                                    matchId: match.id,
+                                    player,
+                                    teamId,
+                                    type: type || 'yellow',
+                                    minute: minute ? parseInt(minute) : null
+                                });
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -437,6 +576,7 @@
         // Generate data.js content
         const resultsStr = JSON.stringify(adminResults, null, 8);
         const goalsStr = JSON.stringify(adminGoals, null, 8);
+        const cardsStr = JSON.stringify(adminCards, null, 8);
 
         const output = `// ============================================================
 // 312 CUP 2026 SEZONU — TURNUVA VERİLERİ
@@ -451,6 +591,8 @@ const TOURNAMENT_DATA = {
     results: ${resultsStr},
 
     goals: ${goalsStr},
+
+    cards: ${cardsStr},
 
     rules: ${JSON.stringify(data.rules, null, 8)}
 };

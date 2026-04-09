@@ -12,6 +12,7 @@
     // Merge localStorage data if available (for admin preview)
     let results = { ...data.results };
     let goals = [...data.goals];
+    let cards = [...(data.cards || [])];
 
     function loadLocalData() {
         const savedData = localStorage.getItem('312cup_admin_data');
@@ -20,6 +21,7 @@
                 const parsed = JSON.parse(savedData);
                 if (parsed.results) results = parsed.results;
                 if (parsed.goals) goals = parsed.goals;
+                if (parsed.cards) cards = parsed.cards;
                 return true;
             } catch (e) { /* ignore */ }
         }
@@ -486,6 +488,44 @@
                     contentsHtml += `</div></div>`;
                 }
 
+                // Show cards for this match
+                const matchCards = cards.filter(c => c.matchId === match.id);
+                if (played && matchCards.length > 0) {
+                    contentsHtml += `<div class="match-cards-section">`;
+                    contentsHtml += `<div style="display:flex; gap:24px; justify-content:center; flex-wrap:wrap;">`;
+                    
+                    const homeCards = matchCards.filter(c => c.teamId === match.home);
+                    const awayCards = matchCards.filter(c => c.teamId === match.away);
+
+                    if (homeCards.length > 0) {
+                        contentsHtml += `<div style="flex:1; min-width:140px;">`;
+                        homeCards.forEach(c => {
+                            const icon = c.type === 'red' ? '🟥' : '🟨';
+                            contentsHtml += `<div class="match-card-item">
+                                <span class="card-icon">${icon}</span>
+                                <span>${c.player}</span>
+                                ${c.minute ? `<span class="goal-minute">${c.minute}'</span>` : ''}
+                            </div>`;
+                        });
+                        contentsHtml += `</div>`;
+                    }
+
+                    if (awayCards.length > 0) {
+                        contentsHtml += `<div style="flex:1; min-width:140px; text-align:right;">`;
+                        awayCards.forEach(c => {
+                            const icon = c.type === 'red' ? '🟥' : '🟨';
+                            contentsHtml += `<div class="match-card-item" style="justify-content:flex-end;">
+                                ${c.minute ? `<span class="goal-minute">${c.minute}'</span>` : ''}
+                                <span>${c.player}</span>
+                                <span class="card-icon">${icon}</span>
+                            </div>`;
+                        });
+                        contentsHtml += `</div>`;
+                    }
+
+                    contentsHtml += `</div></div>`;
+                }
+
                 contentsHtml += `</div>`;
             });
 
@@ -565,14 +605,18 @@
         container.innerHTML = html;
     }
 
-    // ── Render Hero Teams ──
+    // ── Render Hero Teams (clickable for team detail modal) ──
     function renderHeroTeams() {
         const container = document.getElementById('heroTeams');
         if (!container) return;
 
         let html = '';
         Object.keys(teams).forEach(id => {
-            html += teamBadge(id, 'hero-size');
+            html += `<div class="team-badge hero-size" style="background-color: ${teams[id].color};" title="${teams[id].name} — Detaylar için tıkla" onclick="showTeamModal('${id}')">
+                <img src="${teams[id].logo}" alt="${teams[id].name}" 
+                     style="width:100%;height:100%;border-radius:50%;object-fit:cover;"
+                     onerror="this.style.display='none'; this.parentElement.textContent='${teams[id].shortName}';">
+            </div>`;
         });
         container.innerHTML = html;
     }
@@ -829,10 +873,12 @@
                 if (fbData) {
                     if (fbData.results) results = fbData.results;
                     if (fbData.goals) goals = Array.isArray(fbData.goals) ? fbData.goals : Object.values(fbData.goals);
+                    if (fbData.cards) cards = Array.isArray(fbData.cards) ? fbData.cards : Object.values(fbData.cards);
                     // Also cache to localStorage
                     localStorage.setItem('312cup_admin_data', JSON.stringify({
                         results: results,
-                        goals: goals
+                        goals: goals,
+                        cards: cards
                     }));
                     // Refresh UI
                     refreshAllSections();
@@ -840,6 +886,9 @@
                 }
             });
         }
+
+        // ── Team Detail Modal ──
+        createTeamModal();
     }
 
     if (document.readyState === 'loading') {
@@ -847,5 +896,192 @@
     } else {
         init();
     }
+
+    // ══════════════════════════════════════════════
+    //  TEAM DETAIL MODAL
+    // ══════════════════════════════════════════════
+
+    function createTeamModal() {
+        if (document.getElementById('teamModal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'teamModal';
+        modal.className = 'team-modal-overlay';
+        modal.innerHTML = `
+            <div class="team-modal">
+                <button class="team-modal-close" id="teamModalClose">&times;</button>
+                <div id="teamModalContent"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeTeamModal();
+        });
+        document.getElementById('teamModalClose').addEventListener('click', closeTeamModal);
+    }
+
+    function closeTeamModal() {
+        const modal = document.getElementById('teamModal');
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+    }
+
+    window.showTeamModal = function(teamId) {
+        const team = teams[teamId];
+        if (!team) return;
+
+        const modal = document.getElementById('teamModal');
+        const content = document.getElementById('teamModalContent');
+        if (!modal || !content) return;
+
+        // Get all cards for this team
+        const teamCards = cards.filter(c => c.teamId === teamId);
+
+        // Aggregate cards per player
+        const playerCards = {};
+        teamCards.forEach(c => {
+            if (!playerCards[c.player]) {
+                playerCards[c.player] = { yellow: 0, red: 0 };
+            }
+            if (c.type === 'red') {
+                playerCards[c.player].red++;
+            } else {
+                playerCards[c.player].yellow++;
+            }
+        });
+
+        // Get goals for this team
+        const teamGoals = goals.filter(g => g.teamId === teamId);
+        const playerGoals = {};
+        teamGoals.forEach(g => {
+            if (!playerGoals[g.player]) playerGoals[g.player] = 0;
+            playerGoals[g.player]++;
+        });
+
+        // Calculate standings for this team
+        const standings = calculateStandings();
+        const teamStanding = standings.find(s => s.id === teamId);
+
+        let html = `
+            <div class="team-modal-header" style="border-color: ${team.color};">
+                <div class="team-modal-badge" style="background-color: ${team.color};">
+                    <img src="${team.logo}" alt="${team.name}"
+                         style="width:100%;height:100%;border-radius:50%;object-fit:cover;"
+                         onerror="this.style.display='none'; this.parentElement.textContent='${team.shortName}';">
+                </div>
+                <div class="team-modal-info">
+                    <h2>${team.name}</h2>
+                    <p>${team.vardiya}</p>
+                </div>
+            </div>
+        `;
+
+        // Team stats
+        if (teamStanding) {
+            const av = teamStanding.goalsFor - teamStanding.goalsAgainst;
+            const rank = standings.indexOf(teamStanding) + 1;
+            html += `
+            <div class="team-modal-stats">
+                <div class="team-stat">
+                    <span class="team-stat-value">${rank}.</span>
+                    <span class="team-stat-label">Sıra</span>
+                </div>
+                <div class="team-stat">
+                    <span class="team-stat-value">${teamStanding.points}</span>
+                    <span class="team-stat-label">Puan</span>
+                </div>
+                <div class="team-stat">
+                    <span class="team-stat-value">${teamStanding.won}</span>
+                    <span class="team-stat-label">Galibiyet</span>
+                </div>
+                <div class="team-stat">
+                    <span class="team-stat-value">${teamStanding.drawn}</span>
+                    <span class="team-stat-label">Beraberlik</span>
+                </div>
+                <div class="team-stat">
+                    <span class="team-stat-value">${teamStanding.lost}</span>
+                    <span class="team-stat-label">Mağlubiyet</span>
+                </div>
+                <div class="team-stat">
+                    <span class="team-stat-value">${av > 0 ? '+' : ''}${av}</span>
+                    <span class="team-stat-label">Averaj</span>
+                </div>
+            </div>`;
+        }
+
+        // Card section
+        const playerNames = Object.keys(playerCards);
+        const totalYellow = teamCards.filter(c => c.type === 'yellow').length;
+        const totalRed = teamCards.filter(c => c.type === 'red').length;
+
+        html += `
+        <div class="team-modal-section">
+            <h3>🟨🟥 Kart Durumu</h3>`;
+
+        if (playerNames.length === 0) {
+            html += `<p class="team-modal-empty">Henüz kart alan oyuncu yok.</p>`;
+        } else {
+            html += `
+            <div class="team-modal-card-summary">
+                <span class="card-summary-item">🟨 ${totalYellow} Sarı</span>
+                <span class="card-summary-item">🟥 ${totalRed} Kırmızı</span>
+            </div>
+            <div class="team-modal-players">`;
+
+            playerNames.sort((a, b) => {
+                const totalA = playerCards[a].yellow + playerCards[a].red * 3;
+                const totalB = playerCards[b].yellow + playerCards[b].red * 3;
+                return totalB - totalA;
+            });
+
+            playerNames.forEach(name => {
+                const pc = playerCards[name];
+                let badges = '';
+                for (let i = 0; i < pc.yellow; i++) badges += '<span class="card-badge card-yellow"></span>';
+                for (let i = 0; i < pc.red; i++) badges += '<span class="card-badge card-red"></span>';
+
+                html += `
+                <div class="team-modal-player-row">
+                    <span class="player-name">${name}</span>
+                    <div class="player-cards">${badges}</div>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+        html += `</div>`;
+
+        // Goal scorers section
+        const goalPlayerNames = Object.keys(playerGoals);
+        html += `
+        <div class="team-modal-section">
+            <h3>⚽ Gol Atanlar</h3>`;
+
+        if (goalPlayerNames.length === 0) {
+            html += `<p class="team-modal-empty">Henüz gol atan oyuncu yok.</p>`;
+        } else {
+            html += `<div class="team-modal-players">`;
+            goalPlayerNames.sort((a, b) => playerGoals[b] - playerGoals[a]);
+            goalPlayerNames.forEach(name => {
+                html += `
+                <div class="team-modal-player-row">
+                    <span class="player-name">⚽ ${name}</span>
+                    <span class="player-goal-count">${playerGoals[name]} Gol</span>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+        html += `</div>`;
+
+        content.innerHTML = html;
+        modal.style.display = 'flex';
+        // Trigger animation
+        requestAnimationFrame(() => {
+            modal.classList.add('active');
+        });
+    };
 
 })();

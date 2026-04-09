@@ -82,9 +82,11 @@ function firebaseSaveData(results, goals) {
         return Promise.resolve(false);
     }
 
+    const cards = arguments.length > 2 ? arguments[2] : [];
     return firebaseDB.ref('tournament').set({
         results: results || {},
         goals: goals || [],
+        cards: cards || [],
         lastUpdated: new Date().toISOString()
     })
     .then(() => {
