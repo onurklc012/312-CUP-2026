@@ -1,12 +1,8 @@
 // ============================================================
-// 312 CUP 2026 — FIREBASE YAPILANDIRMASI
+// 312 CUP 2026 — FIREBASE YAPILANDIRMASI (OTOMATİK ÜRETİLMİŞTİR)
 // ============================================================
-// 
-// ADIM 1: https://console.firebase.google.com adresine gidin
-// ADIM 2: "Proje Oluştur" → Proje adı: cup312-2026
-// ADIM 3: Realtime Database → Veritabanı oluştur → Test modunda başlat
-// ADIM 4: Proje Ayarları → Genel → Uygulama ekle (Web </>)
-// ADIM 5: Aşağıdaki bilgileri Firebase'den aldığınız bilgilerle değiştirin
+// Bu dosya build.js tarafından otomatik olarak üretilmiştir.
+// Manuel değişiklik yapmayın. Değişiklikleri .env dosyasından yapın.
 // ============================================================
 
 const FIREBASE_CONFIG = {
@@ -31,7 +27,7 @@ function initFirebase() {
             return false;
         }
 
-        // Check if already initialized
+        // Zaten başlatılmışsa kontrol et
         if (firebase.apps.length === 0) {
             firebase.initializeApp(FIREBASE_CONFIG);
         }

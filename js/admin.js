@@ -9,9 +9,8 @@
     const teams = data.teams;
     const fixtures = data.fixtures;
 
-    // Admin password hash - default: "312cup2026"
-    // SHA-256 hash will be compared
-    const ADMIN_PASSWORD = 'aeCF186a';
+    // Admin password hash - loaded from admin-config.js (generated from .env)
+    const ADMIN_HASH = typeof ADMIN_PASSWORD_HASH !== 'undefined' ? ADMIN_PASSWORD_HASH : '';
 
     // Load saved data from localStorage (initial fallback)
     let adminResults = { ...data.results };
@@ -56,13 +55,24 @@
         });
     }
 
+    // Helper to calculate SHA-256 hash of a string using Web Crypto API
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    }
+
     // ── Login ──
-    window.adminLogin = function () {
+    window.adminLogin = async function () {
         const input = document.getElementById('passwordInput');
         const error = document.getElementById('loginError');
         const password = input.value.trim();
 
-        if (password === ADMIN_PASSWORD) {
+        const inputHash = await sha256(password);
+
+        if (inputHash === ADMIN_HASH) {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
             sessionStorage.setItem('312cup_admin_auth', 'true');
